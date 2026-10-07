@@ -23,11 +23,11 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-Complete the input form and select **Submit AI improvement idea**. The app anonymises the submission, runs Engine 1 using the owned-systems data from the repository, and opens the output screen automatically.
+Complete the input form and select **Submit AI improvement idea**. The app stores the submitted form in hosted PostgreSQL, runs Engine 1 using the owned-systems data, and opens the output screen automatically.
 
-The repository data lives in `data/sample_submissions.json` and `data/owned_systems.json`. The IT Context page is generated from `data/owned_systems.csv`; registered systems are stored in SQLite and feed owned-system matching and technology-readiness scoring. Engine 1 derives `capability_type` and `data_object`, then clusters on that pair rather than raw text similarity. Engine 2 applies the field definitions and formulas in `data/decision_output_fields.csv`; this is the renamed copy of the supplied `derived_fields 2.csv` reference.
+The repository data lives in `data/sample_submissions.json` and `data/owned_systems.json`. The IT Context page is generated from `data/owned_systems.csv`; registered systems are stored in hosted PostgreSQL and feed owned-system matching and technology-readiness scoring. Engine 1 derives `capability_type` and `data_object`, then clusters on that pair rather than raw text similarity. Engine 2 applies the field definitions and formulas in `data/decision_output_fields.csv`; this is the renamed copy of the supplied `derived_fields 2.csv` reference.
 
-The supplied executive frontend is integrated in `frontend/` and receives anonymised pipeline output through `static/dashboard/dashboard.json`. Rebuild it after changing React code:
+The supplied executive frontend is integrated in `frontend/` and receives pipeline output through `static/dashboard/dashboard.json`. Rebuild it after changing React code:
 
 ```bash
 cd frontend
@@ -36,19 +36,17 @@ npm run build
 cd ..
 ```
 
-The portfolio output is deterministic and does not require Gemini. The legacy interview helper can use Gemini structured output when `GEMINI_API_KEY` is present. `GEMINI_MODEL` is optional and defaults to `gemini-3.6-flash`. Never commit `api_key.env`.
+The portfolio output is deterministic and does not require OpenAI. The legacy interview helper can use OpenAI structured output when `OPENAI_API_KEY` is present. `OPENAI_MODEL` is optional and defaults to `gpt-6-astra`. Never commit `api_key.env`.
 
-To use Anymize, add `ANYMIZE_API_KEY` to `api_key.env`. User submissions are fail-closed: the complete form record must be successfully anonymised before anything is stored or passed to Engine 1. Name, email, company, submitter role, and matching occurrences in free text are locally replaced before the Anymize request. The SQLite database therefore contains only the anonymised form record.
+Submissions are stored without anonymisation. Configure `DATABASE_URL` in `api_key.env` with a pooled PostgreSQL connection string that includes `sslmode=require`. The app creates the `issues`, `clusters`, and `owned_systems` tables automatically. The `issues` table contains the complete intake record, derived fields, and pipeline metadata.
 
-Direct identifiers are stored as category placeholders such as `[PERSON]`, `[EMAIL]`, and `[COMPANY]`; these are intentionally not hashes. The same placeholder can appear in many records and cannot be used to link a person across submissions. Each submission remains distinguishable through its random `issue_id`, while the temporary original-to-placeholder replacement map is discarded without being written to SQLite.
-
-Submissions are stored in the local `decideher.db` SQLite database. SQLite is included with Python, so it needs no account, API key, server, or additional package. The `issues` table contains the complete anonymised intake record, derived fields, and pipeline metadata. The database file is ignored by Git.
+For Supabase, create a free project, choose **Connect → Session pooler**, copy the connection string, replace the password placeholder, and save it as `DATABASE_URL`. Do not commit `api_key.env`.
 
 The `issues` table schema is generated from the `field_name` column in `data/form_fields.csv`. Every form answer—including name, email, company, generated summary, and issue details—has a directly queryable column. Pipeline metadata and derived Engine 1 values are stored in additional columns.
 
-On startup, the app idempotently seeds 20 representative intake records from `data/sample_submissions.json`. They cover People, Process, Technology, and Data root causes across multiple departments and task types. New user submissions are added after these records without reseeding duplicates.
+The hosted database starts without demo submissions. New user submissions are stored when the intake form is submitted. The optional `sample_data.py` utility can seed the 20 representative records from `data/sample_submissions.json` when demo data is explicitly wanted.
 
-The output screen shows the imported executive dashboard using current SQLite records. Open an initiative to see its impact formula result, four readiness dimensions and sources, evidence and verdict confidence, evidence gate, finding drivers, and source references. Engine 1 reclusters all database records whenever a new valid submission is added.
+The output screen shows the imported executive dashboard using current PostgreSQL records. Open an initiative to see its impact formula result, four readiness dimensions and sources, evidence and verdict confidence, evidence gate, finding drivers, and source references. Engine 1 reclusters all database records whenever a new valid submission is added.
 
 ## Test
 

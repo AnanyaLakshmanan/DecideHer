@@ -3,15 +3,13 @@ from pathlib import Path
 
 import streamlit as st
 
-from dashboard_embed import build_embedded_dashboard
-from dashboard_export import DASHBOARD_DATA_PATH
+from scripts.dashboard_embed import build_embedded_dashboard
+from scripts.dashboard_export import DASHBOARD_DATA_PATH
 from pipeline import cluster_database
-from sample_data import seed_database
 
 
 def _prepare_dashboard_data() -> None:
-    """Seed demo intake data and run the same pipeline used after form submission."""
-    seed_database()
+    """Run the same hosted-data pipeline used after form submission."""
     clusters, _ = cluster_database()
     st.session_state["clusters"] = clusters
     st.session_state["interviews_by_cluster"] = {}

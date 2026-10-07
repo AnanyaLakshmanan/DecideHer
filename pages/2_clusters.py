@@ -2,7 +2,7 @@ import streamlit as st
 from engine1 import run_engine1
 from schemas import Engine1Cluster, OwnedSystem, UseCase
 
-st.title("2. Engine 1 · Anonymise, cluster, and check what exists")
+st.title("2. Engine 1 · Cluster and check what exists")
 raw_use_cases = st.session_state.get("engine1_use_cases", [])
 raw_systems = st.session_state.get("engine1_systems", [])
 

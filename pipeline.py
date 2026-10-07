@@ -1,5 +1,5 @@
-"""Orchestrate Engine 1 over every intake record in SQLite."""
-from dashboard_export import publish_dashboard
+"""Orchestrate Engine 1 over every intake record in hosted PostgreSQL."""
+from scripts.dashboard_export import publish_dashboard
 from engine1 import run_engine1
 from engine2 import build_decision_portfolio
 from schemas import OwnedSystem, UseCase
@@ -23,6 +23,8 @@ def cluster_database(focus_issue_id: str | None = None) -> tuple[list[dict], str
     """Recluster the database, persist assignments, and locate a focused issue."""
     issues = fetch_issues_for_engine1()
     if not issues:
+        replace_engine1_clusters([], {})
+        publish_dashboard(build_decision_portfolio([]))
         return [], None
 
     use_cases = []

@@ -1,6 +1,6 @@
 # DecideHer executive dashboard
 
-This is the supplied React frontend integrated with the Python pipeline. It reads the anonymised portfolio contract from `../static/dashboard/dashboard.json` when served by Streamlit.
+This is the supplied React frontend integrated with the Python pipeline. It reads the portfolio contract from `../static/dashboard/dashboard.json` when served by Streamlit.
 
 ## Run Locally
 

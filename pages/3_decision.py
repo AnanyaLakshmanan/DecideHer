@@ -3,18 +3,16 @@ from pathlib import Path
 
 import streamlit as st
 
-from dashboard_embed import build_embedded_dashboard
-from dashboard_export import DASHBOARD_DATA_PATH, publish_dashboard
+from scripts.dashboard_embed import build_embedded_dashboard
+from scripts.dashboard_export import DASHBOARD_DATA_PATH, publish_dashboard
 from engine2 import build_decision_portfolio
 from pipeline import cluster_database
-from sample_data import seed_database
 
 clusters = st.session_state.get("clusters", [])
 if not clusters or not st.session_state.get("pipeline_complete_engine1"):
     try:
         # Direct links from the React home page start a fresh Streamlit page load.
-        # Rebuild from the anonymised database so the dashboard remains navigable.
-        seed_database()
+        # Rebuild from the hosted database so the dashboard remains navigable.
         clusters, _ = cluster_database()
         st.session_state["clusters"] = clusters
         st.session_state["interviews_by_cluster"] = {}

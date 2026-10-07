@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from typing import Literal
 
-from dashboard_export import DASHBOARD_DATA_PATH, DASHBOARD_DIRECTORY
+from scripts.dashboard_export import DASHBOARD_DATA_PATH, DASHBOARD_DIRECTORY
 
 _SCRIPT_PATTERN = re.compile(
     r'<script\s+type="module"\s+crossorigin\s+src="(?P<src>[^"]+)"></script>'

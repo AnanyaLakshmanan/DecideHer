@@ -1,8 +1,8 @@
 order,section,field_name,question,input_type,required,options,conditional_on,notes
-1,submitter,name,What's your name?,text,yes,,,Anonymised before any model call
-2,submitter,email,What's your email?,text,yes,,,Anonymised before any model call
+1,submitter,name,What's your name?,text,yes,,,Stored with the submission
+2,submitter,email,What's your email?,text,yes,,,Stored with the submission
 3,submitter,department,Which department are you in?,dropdown,yes,Sales | Customer Service | Service | Finance | Operations | Quality | HR | IT | Marketing | Management,,
-4,submitter,company,Which company do you work for?,text,yes,,,Anonymised before any model call
+4,submitter,company,Which company do you work for?,text,yes,,,Stored with the submission
 5,issue,idea,What is your AI improvement idea?,free text,no,,,One sentence is enough
 6,issue,what_happens_today,How do you do this today without AI?,free text,yes,,,Entry gate
 7,issue,why_we_want_this,How can you imagine this working in the future?,free text,yes,,,Entry gate

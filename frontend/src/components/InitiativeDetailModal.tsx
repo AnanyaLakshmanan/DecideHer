@@ -234,10 +234,10 @@ export const InitiativeDetailModal: React.FC<InitiativeDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Anonymized source submissions */}
+          {/* Source submissions */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-stone-700 mb-2 flex items-center justify-between">
-              <span>Sample Anonymized Submissions ({initiative.reports.length})</span>
+              <span>Sample Submissions ({initiative.reports.length})</span>
               <span className="text-[11px] font-normal text-stone-500">
                 Traceable to actual employee feedback
               </span>

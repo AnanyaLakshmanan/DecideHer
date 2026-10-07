@@ -5,8 +5,6 @@ from pydantic import ValidationError
 from engine1 import derive_issue_fields, validate_meaningful_submission
 from form_loader import render_intake_form
 from pipeline import cluster_database
-from privacy import AnonymizationError, anonymize_record, anonymized_role_label
-from sample_data import seed_database
 from schemas import IssueSubmission
 from storage import persist_submission
 from ui_navigation import TOP_NAVIGATION_CSS, navigation_html
@@ -250,7 +248,7 @@ st.html(
         background: #EA580C;
       }
 
-      .privacy-note {
+      .storage-note {
         display: flex;
         gap: 0.85rem;
         align-items: flex-start;
@@ -265,7 +263,7 @@ st.html(
         line-height: 1.5;
       }
 
-      .privacy-icon {
+      .storage-icon {
         flex: 0 0 auto;
         display: grid;
         place-items: center;
@@ -386,7 +384,7 @@ st.html(
         .intake-nav { justify-content: flex-start; }
         .intake-nav-popover { left: 0; right: auto; width: min(340px, calc(100vw - 1.5rem)); }
         .intake-page-heading,
-        .privacy-note,
+        .storage-note,
         [data-testid="stForm"] { width: calc(100vw - 1.2rem) !important; }
         .intake-page-heading { padding-top: 2rem; }
         [data-testid="stForm"] { padding: 1.1rem 1rem 1.3rem !important; }
@@ -404,58 +402,43 @@ st.html(
       <h2>Employee Idea Input Form</h2>
     </section>
 
-    <div class="privacy-note">
-      <span class="privacy-icon">✓</span>
-      <span><strong>Your details stay private.</strong> Direct identifiers are removed before the submission is stored.</span>
+    <div class="storage-note">
+      <span class="storage-icon">✓</span>
+      <span><strong>Your submission is stored online.</strong> Form responses are saved to the hosted DecideHer database.</span>
     </div>
     """.replace("__TOP_NAVIGATION_CSS__", TOP_NAVIGATION_CSS).replace(
         "__TOP_NAVIGATION__", navigation_html("input")
     )
 )
 
-seed_database()
-
 values = render_intake_form()
 if values:
     try:
         submission = IssueSubmission.model_validate(values)
         validate_meaningful_submission(submission)
-        privacy_result = anonymize_record(
-            submission.model_dump(mode="json"),
-            {
-                "person": submission.name,
-                "email": submission.email,
-                "company": submission.company,
-                anonymized_role_label(submission.submitter_role): submission.submitter_role or "",
-            },
-        )
-        safe_answers = privacy_result.anonymized_data
-        safe_model_text = "\n".join(
+        answers = submission.model_dump(mode="json")
+        model_text = "\n".join(
             filter(
                 None,
                 [
-                    safe_answers.get("idea"),
-                    safe_answers.get("what_happens_today"),
-                    safe_answers.get("why_we_want_this"),
+                    answers.get("idea"),
+                    answers.get("what_happens_today"),
+                    answers.get("why_we_want_this"),
                 ],
             )
         )
         issue_id, storage_backend = persist_submission(
             submitter={
-                "name": str(safe_answers["name"]),
-                "email": str(safe_answers["email"]),
-                "company": str(safe_answers["company"]),
-                "department": str(safe_answers["department"]),
+                "name": submission.name,
+                "email": submission.email,
+                "company": submission.company,
+                "department": submission.department,
             },
-            issue=safe_answers,
+            issue=answers,
             derived=derive_issue_fields(submission).model_dump(),
-            model_text=safe_model_text,
+            model_text=model_text,
         )
         clusters, selected_cluster_id = cluster_database(issue_id)
-        for cluster in clusters:
-            if cluster["cluster_id"] == selected_cluster_id:
-                cluster["anonymization_provider"] = privacy_result.provider
-                cluster["anonymization_warning"] = privacy_result.warning
         st.session_state["clusters"] = clusters
         st.session_state["selected_cluster_id"] = selected_cluster_id
         st.session_state["interviews_by_cluster"] = {}
@@ -463,6 +446,6 @@ if values:
         st.session_state["submission_reference"] = f"DH-{issue_id.split('-')[0].upper()}"
         st.session_state["storage_backend"] = storage_backend
         st.switch_page("pages/3_decision.py")
-    except (ValidationError, ValueError, AnonymizationError) as exc:
+    except (ValidationError, ValueError, RuntimeError) as exc:
         st.error("Please correct the form before submitting.")
         st.code(str(exc))

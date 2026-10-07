@@ -1,7 +1,7 @@
 import json
 
-from dashboard_embed import build_embedded_dashboard
-from dashboard_export import DASHBOARD_DATA_PATH
+from scripts.dashboard_embed import build_embedded_dashboard
+from scripts.dashboard_export import DASHBOARD_DATA_PATH
 
 
 def test_dashboard_embed_inlines_bundle_and_current_payload():

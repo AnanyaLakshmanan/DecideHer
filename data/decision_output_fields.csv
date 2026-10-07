@@ -4,7 +4,7 @@ submitter_id,issue,system,,auto-increment,,,Links to submitter record. Kept in a
 root_cause_derived,issue,"model, from fields 5-7",,People | Process | Technology | Data,,,Mismatch against root_cause_stated is a headline finding
 capability_type,issue,"model, from fields 5-7",,draft or generate | extract or structure | classify or route | retrieve or answer | summarise | predict or score | decide or approve | transfer or sync | schedule or coordinate,,,"Primary clustering key. transfer or sync almost never needs AI"
 data_object,issue,model + field 16,,customer | employee | order | product | supplier | financial | internal knowledge | quality or compliance,,,Secondary clustering key
-personal_data_flag,issue,model + field 18,,yes | no | unclear,,,Drives anonymisation handling
+personal_data_flag,issue,model + field 18,,yes | no | unclear,,,Flags records that may require additional data handling
 cluster_id,issue,system,,auto-increment,,,Assigned on capability_type x data_object. Not on raw text similarity
 volume_proxy,issue,"calculated, frequency x time_per_occurrence",,1-30,,,Raw score before banding. No invented currency values
 reach_score,issue,"calculated, from people_affected",,1-5,,,1 | 2-5 | 6-20 | 21-50 | more than 50 maps to 1-5

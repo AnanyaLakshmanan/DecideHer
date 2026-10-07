@@ -4,7 +4,7 @@ submitter_id,issue,system,auto-increment,Links to submitter record
 root_cause_derived,issue,"model, from fields 5-7",People | Process | Technology | Data,Mismatch against stated cause
 capability_type,issue,"model, from fields 5-7",draft or generate | extract or structure | classify or route | retrieve or answer | summarise | predict or score | decide or approve | transfer or sync | schedule or coordinate,Primary clustering key
 data_object,issue,model + field 16,customer | employee | order | product | supplier | financial | internal knowledge | quality or compliance,Secondary clustering key
-personal_data_flag,issue,model + field 18,yes | no | unclear,Drives anonymisation handling
+personal_data_flag,issue,model + field 18,yes | no | unclear,Flags records that may require additional data handling
 cluster_id,issue,system,auto-increment,Assigned on capability type x data object
 volume_proxy,issue,calculated,low | medium | high,Ranking input
 cluster_name,cluster,model,free text,Model-generated label

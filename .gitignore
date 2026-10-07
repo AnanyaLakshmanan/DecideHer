@@ -3,7 +3,6 @@ __pycache__/
 .venv/
 .env
 api_key.env
-decideher.db
 .secrets/
 .streamlit/static/
 static/dashboard/dashboard.json

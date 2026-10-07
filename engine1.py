@@ -2,7 +2,6 @@
 import json
 from pathlib import Path
 
-from privacy import anonymize_text
 from schemas import DerivedIssueFields, Engine1Cluster, IssueSubmission, OwnedSystem, UseCase
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -78,7 +77,7 @@ def validate_meaningful_submission(submission: IssueSubmission) -> None:
 
 
 def run_submission_engine1(submission: IssueSubmission, systems: list[OwnedSystem]) -> list[Engine1Cluster]:
-    """Turn one intake submission into an anonymised Engine 1 cluster."""
+    """Turn one intake submission into an Engine 1 cluster."""
     source_text = " ".join(
         filter(None, [submission.idea, submission.what_happens_today, submission.why_we_want_this])
     )
@@ -96,20 +95,14 @@ def run_submission_engine1(submission: IssueSubmission, systems: list[OwnedSyste
         missing.append("current workflow and systems used")
     if not submission.data_used:
         missing.append("source of truth")
-    privacy_result = anonymize_text(
-        submission.why_we_want_this or submission.idea or submission.what_happens_today,
-        {"name": submission.name, "email": submission.email, "company": submission.company},
-    )
     return [
         Engine1Cluster(
             cluster_id="C1",
             cluster_name=derived.capability_type.title(),
             member_use_cases=[1],
-            underlying_need=privacy_result.anonymized_text,
+            underlying_need=submission.why_we_want_this or submission.idea or submission.what_happens_today,
             owned_system_candidates=candidates,
             missing_information=missing,
-            anonymization_provider=privacy_result.provider,
-            anonymization_warning=privacy_result.warning,
         )
     ]
 

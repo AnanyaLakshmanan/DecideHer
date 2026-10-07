@@ -1,9 +1,9 @@
-"""Publish anonymized pipeline output for the bundled React dashboard."""
+"""Publish pipeline output for the bundled React dashboard."""
 import json
 from pathlib import Path
 from typing import Any
 
-DASHBOARD_DIRECTORY = Path(__file__).parent / "static" / "dashboard"
+DASHBOARD_DIRECTORY = Path(__file__).parents[1] / "static" / "dashboard"
 DASHBOARD_DATA_PATH = DASHBOARD_DIRECTORY / "dashboard.json"
 
 

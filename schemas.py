@@ -95,8 +95,6 @@ class Engine1Cluster(BaseModel):
     data_object: str | None = None
     reports_count: int = 0
     departments_count: int = 0
-    anonymization_provider: str = "local"
-    anonymization_warning: str | None = None
 
 
 class Verdict(str, Enum):

@@ -32,7 +32,7 @@ class Judge(Protocol):
 
 
 class RuleBasedJudge:
-    """Stable demo fallback used when Gemini is unavailable."""
+    """Stable demo fallback used when OpenAI is unavailable."""
 
     def judge(self, cluster: Cluster, evidence: Reconciliation | None = None) -> Judgment:
         systems = cluster.owned_system_candidates
@@ -64,33 +64,44 @@ class RuleBasedJudge:
         )
 
 
-class GeminiJudge:
-    """Gemini structured-output judge. Input is anonymised upstream by Engine 1."""
+class OpenAIJudge:
+    """OpenAI structured-output judge."""
 
     def __init__(self, model: str | None = None):
-        from google import genai
-        self.client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-        self.model = model or os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
+        from openai import OpenAI
+
+        self.client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        self.model = model or os.environ.get("OPENAI_MODEL", "gpt-6-astra")
 
     def judge(self, cluster: Cluster, evidence: Reconciliation | None = None) -> Judgment:
         prompt = {
-            "task": "Judge one anonymised AI transformation cluster. Be conservative when evidence is absent.",
+            "task": "Judge one AI transformation cluster. Be conservative when evidence is absent.",
             "allowed_verdicts": [v.value for v in Verdict],
             "cluster": cluster.model_dump(mode="json"),
             "stakeholder_evidence": evidence.model_dump(mode="json") if evidence else None,
         }
-        response = self.client.models.generate_content(
+        completion = self.client.chat.completions.parse(
             model=self.model,
-            contents=json.dumps(prompt),
-            config={"response_mime_type": "application/json", "response_schema": Judgment},
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Return a conservative judgment that follows the supplied schema.",
+                },
+                {"role": "user", "content": json.dumps(prompt)},
+            ],
+            response_format=Judgment,
         )
-        return Judgment.model_validate_json(response.text)
+        judgment = completion.choices[0].message.parsed
+        if judgment is None:
+            refusal = completion.choices[0].message.refusal
+            raise RuntimeError(refusal or "OpenAI returned no structured judgment.")
+        return judgment
 
 
 def get_judge() -> Judge:
-    if os.environ.get("GEMINI_API_KEY"):
+    if os.environ.get("OPENAI_API_KEY"):
         try:
-            return GeminiJudge()
+            return OpenAIJudge()
         except Exception:
             pass
     return RuleBasedJudge()

@@ -20,7 +20,7 @@ export const ExportSummaryModal: React.FC<ExportSummaryModalProps> = ({
 
   const generateMarkdownSummary = () => {
     return `# DecideHer Executive Summary: AI Investment Portfolio
-Generated from the live anonymized DecideHer pipeline
+Generated from the live DecideHer pipeline
 Framework: DecideHer — From ideas to impact
 
 ## 1. High-Level Portfolio Metrics
@@ -110,7 +110,7 @@ ${DEPARTMENT_DATA.map((d) => `- ${d.name}: ${d.count} use cases (${d.percentage}
     </div>
     <div style="text-align: right;">
       <div class="title">Turn employee ideas into smart AI investments</div>
-      <div class="subtitle">${PORTFOLIO_METRICS.reports} Verified Anonymized Input Reports</div>
+      <div class="subtitle">${PORTFOLIO_METRICS.reports} Verified Input Reports</div>
     </div>
   </div>
 
@@ -202,7 +202,7 @@ ${DEPARTMENT_DATA.map((d) => `- ${d.name}: ${d.count} use cases (${d.percentage}
           In <strong>${PORTFOLIO_METRICS.primaryBlocker.percentage}% of submissions</strong>, this was the leading reported blocker. Validate ownership and evidence before selecting technology.
         </p>
         <div style="margin-top: 6px; font-size: 9.5px; color: #78716c;">
-          Findings are calculated from the current anonymized intake records.
+          Findings are calculated from the current intake records.
         </div>
       </div>
     </div>
